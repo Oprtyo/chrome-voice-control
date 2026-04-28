@@ -10,7 +10,8 @@
     "scripting",
     "storage",
     "offscreen",
-    "alarms"
+    "alarms",
+    "debugger"
   ],
   "host_permissions": [
     "<all_urls>"

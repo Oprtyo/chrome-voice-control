@@ -102,52 +102,6 @@ def launch_browser():
         print(f'[!] Failed to launch Chrome: {e}')
 
 
-def focus_chrome_window():
-    """Focus the Chrome window before sending key press."""
-    if platform.system() == 'Windows':
-        try:
-            import ctypes
-            user32 = ctypes.windll.user32
-
-            def enum_callback(hwnd, results):
-                if user32.IsWindowVisible(hwnd):
-                    length = user32.GetWindowTextLengthW(hwnd)
-                    if length > 0:
-                        buf = ctypes.create_unicode_buffer(length + 1)
-                        user32.GetWindowTextW(hwnd, buf, length + 1)
-                        if 'Chrome' in buf.value or 'Google Chrome' in buf.value:
-                            results.append(hwnd)
-                return True
-
-            WNDENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int))
-            results = []
-            user32.EnumWindows(WNDENUMPROC(enum_callback), 0)
-            if results:
-                hwnd = results[0]
-                user32.SetForegroundWindow(hwnd)
-                return True
-        except Exception as e:
-            print(f'[!] Failed to focus Chrome: {e}')
-    return False
-
-
-def press_key_native(key):
-    """Simulate a real key press at OS level."""
-    if not key:
-        return
-    try:
-        import keyboard
-        import time
-        focus_chrome_window()
-        time.sleep(0.5)
-        keyboard.press_and_release(key)
-        print(f'[*] Key pressed: {key}')
-    except ImportError:
-        print('[!] keyboard library not installed. Run: pip install keyboard')
-    except Exception as e:
-        print(f'[!] Failed to press key: {e}')
-
-
 async def handle_client(websocket):
     connected_clients.add(websocket)
     addr = websocket.remote_address
@@ -161,8 +115,6 @@ async def handle_client(websocket):
                 data = json.loads(message)
                 if data.get('type') == 'launch-browser':
                     launch_browser()
-                elif data.get('action') == 'press-key':
-                    press_key_native(data.get('key', ''))
             except (json.JSONDecodeError, KeyError):
                 pass
     except websockets.exceptions.ConnectionClosed:

@@ -135,6 +135,36 @@ async function getTargetTab() {
   return null;
 }
 
+function sendKeyViaDebugger(tabId, key) {
+  var target = { tabId: tabId };
+  chrome.debugger.attach(target, '1.3', function() {
+    if (chrome.runtime.lastError) {
+      console.warn('[Voice Control] Debugger attach failed:', chrome.runtime.lastError.message);
+      return;
+    }
+    var keyCode = key.toUpperCase().charCodeAt(0);
+    chrome.debugger.sendCommand(target, 'Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: key,
+      code: 'Key' + key.toUpperCase(),
+      windowsVirtualKeyCode: keyCode,
+      nativeVirtualKeyCode: keyCode
+    }, function() {
+      chrome.debugger.sendCommand(target, 'Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: key,
+        code: 'Key' + key.toUpperCase(),
+        windowsVirtualKeyCode: keyCode,
+        nativeVirtualKeyCode: keyCode
+      }, function() {
+        setTimeout(function() {
+          chrome.debugger.detach(target, function() {});
+        }, 300);
+      });
+    });
+  });
+}
+
 function parseNumber(text) {
   var direct = parseInt(text, 10);
   if (!isNaN(direct)) return direct;
@@ -299,7 +329,14 @@ async function handleVoiceCommand(raw) {
   }
 
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
-    chrome.runtime.sendMessage({ type: 'ws-send', data: { action: 'press-key', key: 'f' } }).catch(function() {});
+    var fsTab = await getTargetTab();
+    if (fsTab) {
+      try {
+        await chrome.windows.update(fsTab.windowId, { focused: true });
+        await chrome.tabs.update(fsTab.id, { active: true });
+      } catch(e) {}
+      sendKeyViaDebugger(fsTab.id, 'f');
+    }
     return;
   }
 
