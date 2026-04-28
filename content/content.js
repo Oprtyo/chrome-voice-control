@@ -28,6 +28,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case 'hide-links':
       hideLinkNumbers();
       break;
+    case 'press-key':
+      pressKey(message.key);
+      break;
     case 'show-feedback':
       showFeedback(message.text);
       break;
@@ -64,6 +67,24 @@ function handleScrollTo(position) {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     showFeedback('В конец страницы');
   }
+}
+
+function pressKey(key) {
+  var activeEl = document.activeElement || document.body;
+  var ev = new KeyboardEvent('keydown', {
+    key: key,
+    code: 'Key' + key.toUpperCase(),
+    bubbles: true,
+    cancelable: true
+  });
+  activeEl.dispatchEvent(ev);
+  var evUp = new KeyboardEvent('keyup', {
+    key: key,
+    code: 'Key' + key.toUpperCase(),
+    bubbles: true,
+    cancelable: true
+  });
+  activeEl.dispatchEvent(evUp);
 }
 
 function handleClick() {

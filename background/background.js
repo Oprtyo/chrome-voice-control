@@ -298,6 +298,11 @@ async function handleVoiceCommand(raw) {
     return;
   }
 
+  if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
+    sendToActiveTab({ action: 'press-key', key: 'f' });
+    return;
+  }
+
   if (command === 'нажми' || command === 'клик') {
     sendToActiveTab({ action: 'click' });
     return;
