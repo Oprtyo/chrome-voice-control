@@ -73,29 +73,49 @@ function handleScrollTo(position) {
 }
 
 function toggleFullscreen() {
+  // If already fullscreen — exit
   if (document.fullscreenElement) {
     document.exitFullscreen().catch(function() {});
     return;
   }
-  // Try to find video player container
-  var video = document.querySelector('video');
-  if (video) {
-    // YouTube: fullscreen the player container, not just <video>
-    var container = video.closest('.html5-video-player') ||
-                    video.closest('[class*="player"]') ||
-                    video.closest('[class*="Player"]') ||
-                    video.parentElement;
-    if (container) {
-      container.requestFullscreen().catch(function() {
-        video.requestFullscreen().catch(function() {});
-      });
-    } else {
-      video.requestFullscreen().catch(function() {});
-    }
+
+  // YouTube fullscreen button
+  var ytBtn = document.querySelector('.ytp-fullscreen-button');
+  if (ytBtn) {
+    ytBtn.click();
     return;
   }
-  // No video found — fullscreen the whole page
-  document.documentElement.requestFullscreen().catch(function() {});
+
+  // Common video player fullscreen buttons
+  var selectors = [
+    'button[aria-label*="fullscreen" i]',
+    'button[aria-label*="полный экран" i]',
+    'button[title*="fullscreen" i]',
+    'button[title*="полный экран" i]',
+    '[class*="fullscreen-button"]',
+    '[class*="fullscreen_button"]',
+    '[class*="FullscreenButton"]',
+    '[class*="vjs-fullscreen-control"]',
+    '[data-testid*="fullscreen"]'
+  ];
+  for (var i = 0; i < selectors.length; i++) {
+    var btn = document.querySelector(selectors[i]);
+    if (btn) {
+      btn.click();
+      return;
+    }
+  }
+
+  // Fallback: try requestFullscreen on video or page
+  var video = document.querySelector('video');
+  if (video) {
+    var container = video.closest('.html5-video-player') || video.parentElement;
+    (container || video).requestFullscreen().catch(function() {
+      document.documentElement.requestFullscreen().catch(function() {});
+    });
+  } else {
+    document.documentElement.requestFullscreen().catch(function() {});
+  }
 }
 
 function pressKey(key) {
