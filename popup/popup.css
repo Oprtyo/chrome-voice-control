@@ -1,0 +1,180 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 340px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+}
+
+.container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+}
+
+h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-block.connected {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+}
+
+.status-block.disconnected {
+  background: rgba(245, 54, 92, 0.1);
+  color: #f5365c;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.connected .status-dot {
+  background: #4ade80;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.6);
+}
+
+.disconnected .status-dot {
+  background: #f5365c;
+}
+
+.hint {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.hint code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #c0c0ff;
+}
+
+.reconnect-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reconnect-btn:hover {
+  background: rgba(102, 126, 234, 0.3);
+}
+
+.wake-info {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #aaa;
+  padding: 10px;
+}
+
+.wake-info b {
+  color: #667eea;
+}
+
+.last-command {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.last-command .label {
+  color: #888;
+}
+
+.last-command #commandText {
+  color: #c0c0ff;
+  font-weight: 500;
+}
+
+.commands-list {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.commands-list summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: #888;
+  outline: none;
+  user-select: none;
+}
+
+.commands-list summary:hover {
+  color: #bbb;
+}
+
+.commands-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cmd-group h3 {
+  font-size: 12px;
+  color: #667eea;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cmd-group ul {
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #aaa;
+}
+
+.cmd-group ul b {
+  color: #ddd;
+  font-weight: 500;
+}

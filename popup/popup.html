@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="../icons/icon48.png" alt="Voice Control" class="logo">
+      <h1>Голосовое управление</h1>
+    </div>
+
+    <div id="statusBlock" class="status-block disconnected">
+      <div class="status-dot"></div>
+      <span id="statusText">Сервер не подключён</span>
+    </div>
+
+    <div id="hint" class="hint">
+      Запустите <code>start.bat</code> (Windows) или <code>./start.sh</code> (Linux/Mac)
+    </div>
+
+    <button id="reconnectBtn" class="reconnect-btn">Переподключиться</button>
+
+    <div id="wakeInfo" class="wake-info" style="display:none">
+      Скажите <b>«Окей браузер»</b>, затем команду
+    </div>
+
+    <div id="lastCommand" class="last-command" style="display:none">
+      <span class="label">Последняя команда:</span>
+      <span id="commandText"></span>
+    </div>
+
+    <details class="commands-list">
+      <summary>Доступные команды</summary>
+      <div class="commands-grid">
+        <div class="cmd-group">
+          <h3>Навигация</h3>
+          <ul>
+            <li><b>назад</b> — назад в истории</li>
+            <li><b>вперёд</b> — вперёд в истории</li>
+            <li><b>обновить</b> — перезагрузить</li>
+            <li><b>домой</b> — новая вкладка</li>
+          </ul>
+        </div>
+        <div class="cmd-group">
+          <h3>Прокрутка</h3>
+          <ul>
+            <li><b>вверх / вниз</b> — прокрутка</li>
+            <li><b>влево / вправо</b> — горизонтальная</li>
+            <li><b>в начало</b> — к верху страницы</li>
+            <li><b>в конец</b> — к низу страницы</li>
+          </ul>
+        </div>
+        <div class="cmd-group">
+          <h3>Вкладки</h3>
+          <ul>
+            <li><b>новая вкладка</b> — открыть</li>
+            <li><b>закрыть вкладку</b> — закрыть</li>
+            <li><b>следующая вкладка</b></li>
+            <li><b>предыдущая вкладка</b></li>
+          </ul>
+        </div>
+        <div class="cmd-group">
+          <h3>Другое</h3>
+          <ul>
+            <li><b>найди [запрос]</b> — поиск Google</li>
+            <li><b>открой [сайт]</b> — открыть сайт</li>
+            <li><b>увеличить / уменьшить</b> — зум</li>
+            <li><b>нажми</b> — клик по центру</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
