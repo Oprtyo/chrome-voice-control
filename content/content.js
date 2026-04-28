@@ -76,13 +76,24 @@ function toggleFullscreen() {
   // If already fullscreen — exit
   if (document.fullscreenElement) {
     document.exitFullscreen().catch(function() {});
+    showFeedback('Выход из полного экрана');
     return;
   }
 
-  // YouTube fullscreen button
-  var ytBtn = document.querySelector('.ytp-fullscreen-button');
-  if (ytBtn) {
-    ytBtn.click();
+  // YouTube: show controls first, then click fullscreen button
+  var player = document.querySelector('.html5-video-player');
+  if (player) {
+    // Dispatch mousemove to reveal controls
+    player.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+    setTimeout(function() {
+      var ytBtn = document.querySelector('.ytp-fullscreen-button');
+      if (ytBtn) {
+        ytBtn.click();
+        showFeedback('Полный экран');
+      } else {
+        showFeedback('Кнопка полного экрана не найдена');
+      }
+    }, 200);
     return;
   }
 
@@ -102,6 +113,7 @@ function toggleFullscreen() {
     var btn = document.querySelector(selectors[i]);
     if (btn) {
       btn.click();
+      showFeedback('Полный экран');
       return;
     }
   }
@@ -109,12 +121,16 @@ function toggleFullscreen() {
   // Fallback: try requestFullscreen on video or page
   var video = document.querySelector('video');
   if (video) {
-    var container = video.closest('.html5-video-player') || video.parentElement;
+    var container = video.closest('[class*="player"]') || video.parentElement;
     (container || video).requestFullscreen().catch(function() {
-      document.documentElement.requestFullscreen().catch(function() {});
+      document.documentElement.requestFullscreen().catch(function() {
+        showFeedback('Не удалось развернуть');
+      });
     });
   } else {
-    document.documentElement.requestFullscreen().catch(function() {});
+    document.documentElement.requestFullscreen().catch(function() {
+      showFeedback('Не удалось развернуть');
+    });
   }
 }
 
