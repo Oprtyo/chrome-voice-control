@@ -309,15 +309,13 @@ async function handleVoiceCommand(raw) {
               document.exitFullscreen();
               return;
             }
-            var player = document.querySelector('.html5-video-player');
-            if (player) {
-              player.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
-              setTimeout(function() {
-                var btn = document.querySelector('.ytp-fullscreen-button');
-                if (btn) btn.click();
-              }, 200);
+            // YouTube: double-click on video to toggle fullscreen
+            var video = document.querySelector('.html5-video-player video');
+            if (video) {
+              video.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
               return;
             }
+            // Other players: try fullscreen buttons
             var selectors = [
               'button[aria-label*="fullscreen" i]', 'button[aria-label*="полный экран" i]',
               'button[title*="fullscreen" i]', 'button[title*="полный экран" i]',
@@ -328,9 +326,10 @@ async function handleVoiceCommand(raw) {
               var b = document.querySelector(selectors[i]);
               if (b) { b.click(); return; }
             }
-            var video = document.querySelector('video');
-            if (video) {
-              (video.closest('[class*="player"]') || video).requestFullscreen().catch(function() {});
+            // Fallback: any video element
+            var vid = document.querySelector('video');
+            if (vid) {
+              vid.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
             }
           }
         });
