@@ -299,7 +299,43 @@ async function handleVoiceCommand(raw) {
   }
 
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
-    sendToActiveTab({ action: 'toggle-fullscreen' });
+    var fsTab = await getTargetTab();
+    if (fsTab) {
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: fsTab.id },
+          func: function() {
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+              return;
+            }
+            var player = document.querySelector('.html5-video-player');
+            if (player) {
+              player.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+              setTimeout(function() {
+                var btn = document.querySelector('.ytp-fullscreen-button');
+                if (btn) btn.click();
+              }, 200);
+              return;
+            }
+            var selectors = [
+              'button[aria-label*="fullscreen" i]', 'button[aria-label*="полный экран" i]',
+              'button[title*="fullscreen" i]', 'button[title*="полный экран" i]',
+              '[class*="fullscreen-button"]', '[class*="fullscreen_button"]',
+              '[class*="vjs-fullscreen-control"]'
+            ];
+            for (var i = 0; i < selectors.length; i++) {
+              var b = document.querySelector(selectors[i]);
+              if (b) { b.click(); return; }
+            }
+            var video = document.querySelector('video');
+            if (video) {
+              (video.closest('[class*="player"]') || video).requestFullscreen().catch(function() {});
+            }
+          }
+        });
+      } catch(e) {}
+    }
     return;
   }
 
