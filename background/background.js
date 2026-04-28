@@ -300,6 +300,7 @@ async function handleVoiceCommand(raw) {
 
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
     var fsTab = await getTargetTab();
+    console.log('[Voice Control] Fullscreen tab:', fsTab ? fsTab.id + ' ' + fsTab.url : 'NOT FOUND');
     if (fsTab) {
       try {
         await chrome.scripting.executeScript({
