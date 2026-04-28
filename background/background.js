@@ -299,43 +299,7 @@ async function handleVoiceCommand(raw) {
   }
 
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
-    var fsTab = await getTargetTab();
-    console.log('[Voice Control] Fullscreen tab:', fsTab ? fsTab.id + ' ' + fsTab.url : 'NOT FOUND');
-    if (fsTab) {
-      try {
-        await chrome.scripting.executeScript({
-          target: { tabId: fsTab.id },
-          func: function() {
-            if (document.fullscreenElement) {
-              document.exitFullscreen();
-              return;
-            }
-            // YouTube: double-click on video to toggle fullscreen
-            var video = document.querySelector('.html5-video-player video');
-            if (video) {
-              video.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-              return;
-            }
-            // Other players: try fullscreen buttons
-            var selectors = [
-              'button[aria-label*="fullscreen" i]', 'button[aria-label*="полный экран" i]',
-              'button[title*="fullscreen" i]', 'button[title*="полный экран" i]',
-              '[class*="fullscreen-button"]', '[class*="fullscreen_button"]',
-              '[class*="vjs-fullscreen-control"]'
-            ];
-            for (var i = 0; i < selectors.length; i++) {
-              var b = document.querySelector(selectors[i]);
-              if (b) { b.click(); return; }
-            }
-            // Fallback: any video element
-            var vid = document.querySelector('video');
-            if (vid) {
-              vid.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-            }
-          }
-        });
-      } catch(e) {}
-    }
+    chrome.runtime.sendMessage({ type: 'ws-send', data: { action: 'press-key', key: 'f' } }).catch(function() {});
     return;
   }
 

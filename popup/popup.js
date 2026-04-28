@@ -62,6 +62,8 @@ function sendDebugCommand() {
   const cmd = debugInput.value.trim();
   if (!cmd) return;
 
+  const isFullscreen = /на весь экран|полный экран|фулскрин|разверни/.test(cmd.toLowerCase());
+
   addLog('> ' + cmd, 'log-cmd');
   chrome.runtime.sendMessage({ type: 'voice-command', command: cmd }, (resp) => {
     if (resp && resp.ok) {
@@ -69,7 +71,12 @@ function sendDebugCommand() {
     }
   });
   debugInput.value = '';
-  debugInput.focus();
+
+  if (isFullscreen) {
+    setTimeout(() => window.close(), 300);
+  } else {
+    debugInput.focus();
+  }
 }
 
 function addLog(text, cls) {

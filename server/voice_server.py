@@ -102,6 +102,20 @@ def launch_browser():
         print(f'[!] Failed to launch Chrome: {e}')
 
 
+def press_key_native(key):
+    """Simulate a real key press at OS level."""
+    if not key:
+        return
+    try:
+        import keyboard
+        keyboard.press_and_release(key)
+        print(f'[*] Key pressed: {key}')
+    except ImportError:
+        print('[!] keyboard library not installed. Run: pip install keyboard')
+    except Exception as e:
+        print(f'[!] Failed to press key: {e}')
+
+
 async def handle_client(websocket):
     connected_clients.add(websocket)
     addr = websocket.remote_address
@@ -115,6 +129,8 @@ async def handle_client(websocket):
                 data = json.loads(message)
                 if data.get('type') == 'launch-browser':
                     launch_browser()
+                elif data.get('action') == 'press-key':
+                    press_key_native(data.get('key', ''))
             except (json.JSONDecodeError, KeyError):
                 pass
     except websockets.exceptions.ConnectionClosed:
