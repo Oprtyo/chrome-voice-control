@@ -96,6 +96,24 @@
         </div>
       </div>
     </details>
+
+    <div class="debug-toggle">
+      <label class="switch-label">
+        <span>Отладка</span>
+        <label class="switch">
+          <input type="checkbox" id="debugToggle">
+          <span class="slider"></span>
+        </label>
+      </label>
+    </div>
+
+    <div id="debugPanel" class="debug-panel" style="display:none">
+      <div class="debug-input-row">
+        <input type="text" id="debugInput" class="debug-input" placeholder="Введите команду...">
+        <button id="debugSend" class="debug-send">&#9654;</button>
+      </div>
+      <div id="debugLog" class="debug-log"></div>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

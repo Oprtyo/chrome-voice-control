@@ -43,3 +43,46 @@ reconnectBtn.addEventListener('click', () => {
     }, 2000);
   });
 });
+
+// Debug panel
+const debugToggle = document.getElementById('debugToggle');
+const debugPanel = document.getElementById('debugPanel');
+const debugInput = document.getElementById('debugInput');
+const debugSend = document.getElementById('debugSend');
+const debugLog = document.getElementById('debugLog');
+
+debugToggle.addEventListener('change', () => {
+  debugPanel.style.display = debugToggle.checked ? 'block' : 'none';
+  if (debugToggle.checked) {
+    debugInput.focus();
+  }
+});
+
+function sendDebugCommand() {
+  const cmd = debugInput.value.trim();
+  if (!cmd) return;
+
+  addLog('> ' + cmd, 'log-cmd');
+  chrome.runtime.sendMessage({ type: 'voice-command', command: cmd }, (resp) => {
+    if (resp && resp.ok) {
+      addLog('OK', 'log-ok');
+    }
+  });
+  debugInput.value = '';
+  debugInput.focus();
+}
+
+function addLog(text, cls) {
+  const entry = document.createElement('div');
+  entry.className = 'log-entry ' + (cls || '');
+  entry.textContent = text;
+  debugLog.prepend(entry);
+  if (debugLog.children.length > 20) {
+    debugLog.removeChild(debugLog.lastChild);
+  }
+}
+
+debugSend.addEventListener('click', sendDebugCommand);
+debugInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendDebugCommand();
+});

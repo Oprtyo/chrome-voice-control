@@ -207,3 +207,127 @@ h1 {
   color: #888;
   font-weight: 500;
 }
+
+.debug-toggle {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #888;
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+
+.slider::before {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  bottom: 3px;
+  background: #888;
+  border-radius: 50%;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.switch input:checked + .slider {
+  background: rgba(102, 126, 234, 0.3);
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(16px);
+  background: #667eea;
+}
+
+.debug-panel {
+  margin-top: 10px;
+}
+
+.debug-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+.debug-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.debug-input:focus {
+  border-color: #667eea;
+}
+
+.debug-input::placeholder {
+  color: #555;
+}
+
+.debug-send {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.debug-send:hover {
+  background: rgba(102, 126, 234, 0.35);
+}
+
+.debug-log {
+  margin-top: 8px;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.debug-log .log-entry {
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.debug-log .log-cmd {
+  color: #667eea;
+}
+
+.debug-log .log-ok {
+  color: #4ade80;
+}
