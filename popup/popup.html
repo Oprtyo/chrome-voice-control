@@ -23,7 +23,7 @@
     <button id="reconnectBtn" class="reconnect-btn">Переподключиться</button>
 
     <div id="wakeInfo" class="wake-info" style="display:none">
-      Скажите <b>«Окей браузер»</b>, затем команду
+      Скажите <b>«Окей гугл»</b>, затем команду
     </div>
 
     <div id="lastCommand" class="last-command" style="display:none">
@@ -32,7 +32,17 @@
     </div>
 
     <details class="commands-list">
-      <summary>Доступные команды</summary>
+      <summary>Wake-фразы</summary>
+      <div class="commands-section">
+        <ul>
+          <li><b>Окей гугл</b> — активировать распознавание команды</li>
+          <li><b>Открой браузер</b> — запустить Chrome (даже если закрыт)</li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="commands-list">
+      <summary>Голосовые команды</summary>
       <div class="commands-grid">
         <div class="cmd-group">
           <h3>Навигация</h3>
@@ -62,11 +72,26 @@
           </ul>
         </div>
         <div class="cmd-group">
-          <h3>Другое</h3>
+          <h3>Поиск и сайты</h3>
           <ul>
             <li><b>найди [запрос]</b> — поиск Google</li>
             <li><b>открой [сайт]</b> — открыть сайт</li>
+            <li><b>открой браузер</b> — запуск Chrome</li>
+          </ul>
+        </div>
+        <div class="cmd-group">
+          <h3>Ссылки</h3>
+          <ul>
+            <li><b>выбери ссылку</b> — показать номера</li>
+            <li><b>[номер]</b> — нажать ссылку</li>
+            <li><b>отмена</b> — убрать номера</li>
+          </ul>
+        </div>
+        <div class="cmd-group">
+          <h3>Другое</h3>
+          <ul>
             <li><b>увеличить / уменьшить</b> — зум</li>
+            <li><b>на весь экран</b> — полный экран (F)</li>
             <li><b>нажми</b> — клик по центру</li>
           </ul>
         </div>

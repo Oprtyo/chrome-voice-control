@@ -178,3 +178,19 @@ h1 {
   color: #ddd;
   font-weight: 500;
 }
+
+.commands-section {
+  margin-top: 10px;
+}
+
+.commands-section ul {
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #aaa;
+}
+
+.commands-section ul b {
+  color: #ddd;
+  font-weight: 500;
+}
