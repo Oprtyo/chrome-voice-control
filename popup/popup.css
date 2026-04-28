@@ -194,3 +194,16 @@ h1 {
   color: #ddd;
   font-weight: 500;
 }
+
+.footnote {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.footnote b {
+  color: #888;
+  font-weight: 500;
+}
