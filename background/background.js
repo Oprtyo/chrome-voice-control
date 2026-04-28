@@ -328,6 +328,18 @@ async function handleVoiceCommand(raw) {
     return;
   }
 
+  if (command === 'включи vpn' || command === 'включи впн' || command === 'включить vpn' || command === 'включить впн' || command === 'запусти vpn' || command === 'запусти впн') {
+    chrome.runtime.sendMessage({ type: 'ws-send', data: { type: 'vpn-on' } }).catch(function() {});
+    sendToActiveTab({ action: 'show-feedback', text: 'VPN включается...' });
+    return;
+  }
+
+  if (command === 'выключи vpn' || command === 'выключи впн' || command === 'выключить vpn' || command === 'выключить впн' || command === 'отключи vpn' || command === 'отключи впн' || command === 'останови vpn' || command === 'останови впн') {
+    chrome.runtime.sendMessage({ type: 'ws-send', data: { type: 'vpn-off' } }).catch(function() {});
+    sendToActiveTab({ action: 'show-feedback', text: 'VPN выключается...' });
+    return;
+  }
+
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
     var fsTab = await getTargetTab();
     if (fsTab) {

@@ -30,6 +30,10 @@ WS_PORT = 9876
 CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 CHROME_PROFILE = 'Profile 1'
 
+# WireGuard config
+WIREGUARD_PATH = r'C:\Program Files\WireGuard\wireguard.exe'
+WIREGUARD_TUNNEL = 'wg0'  # Имя туннеля (имя .conf файла без расширения)
+
 # Поиск модели
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATHS = [
@@ -102,6 +106,31 @@ def launch_browser():
         print(f'[!] Failed to launch Chrome: {e}')
 
 
+def vpn_on():
+    """Start WireGuard tunnel."""
+    try:
+        config_path = os.path.join(os.path.dirname(WIREGUARD_PATH), 'Data',
+                                   'Configurations', f'{WIREGUARD_TUNNEL}.conf.dpapi')
+        # Try installtunnelservice (requires admin)
+        args = [WIREGUARD_PATH, '/installtunnelservice', config_path]
+        print(f'[*] Starting VPN: {WIREGUARD_TUNNEL}')
+        subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f'[*] VPN started: {WIREGUARD_TUNNEL}')
+    except Exception as e:
+        print(f'[!] Failed to start VPN: {e}')
+
+
+def vpn_off():
+    """Stop WireGuard tunnel."""
+    try:
+        args = [WIREGUARD_PATH, '/uninstalltunnelservice', WIREGUARD_TUNNEL]
+        print(f'[*] Stopping VPN: {WIREGUARD_TUNNEL}')
+        subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f'[*] VPN stopped: {WIREGUARD_TUNNEL}')
+    except Exception as e:
+        print(f'[!] Failed to stop VPN: {e}')
+
+
 async def handle_client(websocket):
     connected_clients.add(websocket)
     addr = websocket.remote_address
@@ -115,6 +144,10 @@ async def handle_client(websocket):
                 data = json.loads(message)
                 if data.get('type') == 'launch-browser':
                     launch_browser()
+                elif data.get('type') == 'vpn-on':
+                    vpn_on()
+                elif data.get('type') == 'vpn-off':
+                    vpn_off()
             except (json.JSONDecodeError, KeyError):
                 pass
     except websockets.exceptions.ConnectionClosed:

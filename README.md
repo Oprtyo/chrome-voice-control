@@ -77,6 +77,8 @@ chmod +x install.sh start.sh
 | **увеличить / уменьшить** | Зум страницы |
 | **нажми** | Клик по центру экрана |
 | **на весь экран** | Полноэкранный режим (нажатие F — YouTube и др.) |
+| **включи VPN** | Включить WireGuard VPN |
+| **выключи VPN** | Выключить WireGuard VPN |
 | **выбери ссылку** | Показать номера на ссылках, затем назвать номер для клика |
 | **отмена** | Убрать номера ссылок |
 
@@ -86,6 +88,12 @@ chmod +x install.sh start.sh
 ```python
 CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 CHROME_PROFILE = 'Profile 1'
+```
+
+Настройка WireGuard VPN:
+```python
+WIREGUARD_PATH = r'C:\Program Files\WireGuard\wireguard.exe'
+WIREGUARD_TUNNEL = 'wg0'  # Имя вашего туннеля
 ```
 
 Выбор микрофона:
