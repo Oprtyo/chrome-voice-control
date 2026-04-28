@@ -91,7 +91,7 @@ def launch_browser():
             else:
                 chrome_path = 'google-chrome'
 
-        args = [chrome_path]
+        args = [chrome_path, '--silent-debugger-extension-api']
         if CHROME_PROFILE:
             args.append(f'--profile-directory={CHROME_PROFILE}')
 
