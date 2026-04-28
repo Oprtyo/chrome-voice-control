@@ -32,7 +32,7 @@ CHROME_PROFILE = 'Profile 1'
 
 # WireGuard config
 WIREGUARD_PATH = r'C:\Program Files\WireGuard\wireguard.exe'
-WIREGUARD_TUNNEL = 'wg0'  # Имя туннеля (имя .conf файла без расширения)
+WIREGUARD_TUNNEL = '1MyVPN-Laptop'  # Имя туннеля (имя .conf файла без расширения)
 
 # Поиск модели
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
