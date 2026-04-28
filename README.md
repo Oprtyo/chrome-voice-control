@@ -39,9 +39,10 @@ chmod +x install.sh start.sh
 - Windows: `start.bat`
 - Linux / macOS: `./start.sh`
 
-**Режим трея (свёрнутый):**
-- Windows: `start_tray.vbs` (полностью скрытый) или `start_tray.bat`
+**Режим трея (свёрнутый, с правами администратора):**
+- Windows: `start_tray.vbs` (полностью скрытый, запросит UAC) или `start_tray.bat`
 - Иконка микрофона появится в трее — правый клик для управления
+- Запуск от администратора необходим для управления WireGuard VPN
 
 **Автозапуск при старте Windows:**
 1. `Win+R` → `shell:startup` → Enter
@@ -82,19 +83,41 @@ chmod +x install.sh start.sh
 | **выбери ссылку** | Показать номера на ссылках, затем назвать номер для клика |
 | **отмена** | Убрать номера ссылок |
 
+Все команды и фразы можно изменить в `config.json`.
+
 ## Настройка
 
-Путь к Chrome и профиль можно изменить в `server/voice_server.py`:
-```python
-CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
-CHROME_PROFILE = 'Profile 1'
+Все настройки хранятся в файле `config.json` в корне проекта:
+
+```json
+{
+  "wake_phrase": "окей гугл",
+  "launch_phrase": "открой браузер",
+  "server": {
+    "port": 9876
+  },
+  "chrome": {
+    "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "profile": "Profile 1",
+    "flags": ["--silent-debugger-extension-api"]
+  },
+  "wireguard": {
+    "path": "C:\\Program Files\\WireGuard\\wireguard.exe",
+    "tunnel": "1MyVPN-Laptop"
+  },
+  "commands": { ... }
+}
 ```
 
-Настройка WireGuard VPN:
-```python
-WIREGUARD_PATH = r'C:\Program Files\WireGuard\wireguard.exe'
-WIREGUARD_TUNNEL = 'wg0'  # Имя вашего туннеля
-```
+**Что можно настроить:**
+- `wake_phrase` — фраза активации голосовых команд
+- `launch_phrase` — фраза для запуска Chrome
+- `chrome.path` — путь к Chrome
+- `chrome.profile` — профиль Chrome
+- `chrome.flags` — флаги запуска Chrome
+- `wireguard.path` — путь к WireGuard
+- `wireguard.tunnel` — имя туннеля WireGuard
+- `commands` — все голосовые команды (можно добавлять/менять/удалять)
 
 Выбор микрофона:
 ```
@@ -107,11 +130,13 @@ python server\voice_server.py --device 1
 - **Google Chrome 116+**
 - **Микрофон**
 - Интернет для первой установки (скачивание модели) и для распознавания команд (Google Speech API)
+- **Права администратора** для управления WireGuard VPN
 
 ## Структура проекта
 
 ```
 chrome-voice-control/
+├── config.json              # Все настройки (команды, пути, фразы)
 ├── manifest.json            # Chrome extension manifest (v3)
 ├── background/              # Service worker
 ├── content/                 # Content script (действия на странице)
@@ -126,7 +151,7 @@ chrome-voice-control/
 │   └── model/               # Модель Vosk (после установки)
 ├── install.bat / .sh        # Скрипт установки
 ├── start.bat / .sh          # Скрипт запуска (консоль)
-├── start_tray.bat / .vbs    # Скрипт запуска (трей)
+├── start_tray.bat / .vbs    # Скрипт запуска (трей, от администратора)
 └── README.md
 ```
 

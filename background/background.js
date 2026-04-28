@@ -2,6 +2,21 @@ let recognizerWindowId = null;
 let targetTabId = null;
 let targetWindowId = null;
 let linkModeActive = false;
+let cmdConfig = null;
+
+async function loadConfig() {
+  try {
+    var url = chrome.runtime.getURL('config.json');
+    var resp = await fetch(url);
+    cmdConfig = await resp.json();
+  } catch (e) {
+    console.warn('[Voice Control] Failed to load config.json:', e);
+    cmdConfig = {};
+  }
+  return cmdConfig;
+}
+
+loadConfig();
 
 async function ensureOffscreen() {
   try {
@@ -195,7 +210,35 @@ function parseNumber(text) {
   return NaN;
 }
 
+function getCmds(group) {
+  if (!cmdConfig || !cmdConfig.commands) return {};
+  return cmdConfig.commands[group] || {};
+}
+
+function matchCmd(command, group) {
+  var cmds = getCmds(group);
+  return cmds[command] || null;
+}
+
+function matchPrefix(command, group) {
+  var prefixes = getCmds(group);
+  if (!Array.isArray(prefixes)) return null;
+  for (var i = 0; i < prefixes.length; i++) {
+    if (command.startsWith(prefixes[i] + ' ')) {
+      return command.substring(prefixes[i].length + 1);
+    }
+  }
+  return null;
+}
+
+function matchList(command, group) {
+  var list = getCmds(group);
+  if (!Array.isArray(list)) return false;
+  return list.indexOf(command) !== -1;
+}
+
 async function handleVoiceCommand(raw) {
+  if (!cmdConfig) await loadConfig();
   var command = raw.toLowerCase().trim();
   console.log('Voice command:', command);
 
@@ -213,114 +256,98 @@ async function handleVoiceCommand(raw) {
     }
   }
 
-  if (command === 'выбрать ссылку' || command === 'выбери ссылку' || command === 'ссылки' || command === 'покажи ссылки' || command === 'показать ссылки') {
+  // Links
+  var linkAction = matchCmd(command, 'links');
+  if (linkAction === 'show-links') {
     sendToActiveTab({ action: 'show-links' });
     linkModeActive = true;
     return;
   }
-
-  if (command === 'убрать ссылки' || command === 'скрыть ссылки' || command === 'убрать номера' || command === 'скрыть номера') {
+  if (linkAction === 'hide-links') {
     sendToActiveTab({ action: 'hide-links' });
     linkModeActive = false;
     return;
   }
 
-  if (command === 'новая вкладка' || command === 'новая страница') {
+  // Tabs
+  var tabAction = matchCmd(command, 'tabs');
+  if (tabAction === 'new-tab') {
     try { chrome.tabs.create({ windowId: targetWindowId || undefined }); } catch(e) { chrome.tabs.create({}); }
     sendToActiveTab({ action: 'show-feedback', text: 'Новая вкладка' });
     return;
   }
-  if (command === 'закрыть вкладку' || command === 'закрыть страницу' || command === 'закрой вкладку') {
+  if (tabAction === 'close-tab') {
     var tab = await getTargetTab();
     if (tab) { try { await chrome.tabs.remove(tab.id); } catch(e) {} }
     return;
   }
-  if (command === 'следующая вкладка') {
-    await switchTab(1);
-    return;
-  }
-  if (command === 'предыдущая вкладка') {
-    await switchTab(-1);
-    return;
-  }
+  if (tabAction === 'next-tab') { await switchTab(1); return; }
+  if (tabAction === 'prev-tab') { await switchTab(-1); return; }
 
-  if (command === 'назад') {
-    sendToActiveTab({ action: 'go-back' });
-    return;
-  }
-  if (command === 'вперёд' || command === 'вперед') {
-    sendToActiveTab({ action: 'go-forward' });
-    return;
-  }
-  if (command === 'обновить' || command === 'обновить страницу' || command === 'перезагрузить' || command === 'обнови') {
+  // Navigation
+  var navAction = matchCmd(command, 'navigation');
+  if (navAction === 'go-back') { sendToActiveTab({ action: 'go-back' }); return; }
+  if (navAction === 'go-forward') { sendToActiveTab({ action: 'go-forward' }); return; }
+  if (navAction === 'reload') {
     var tab = await getTargetTab();
     if (tab) { try { await chrome.tabs.reload(tab.id); } catch(e) {} }
     sendToActiveTab({ action: 'show-feedback', text: 'Обновление' });
     return;
   }
-  if (command === 'домой' || command === 'на главную') {
+  if (navAction === 'home') {
     var tab = await getTargetTab();
     if (tab) { try { await chrome.tabs.update(tab.id, { url: 'chrome://newtab' }); } catch(e) {} }
     return;
   }
 
-  if (command === 'вниз' || command === 'прокрути вниз') {
-    sendToActiveTab({ action: 'scroll', direction: 'down' });
+  // Scroll
+  var scrollAction = matchCmd(command, 'scroll');
+  if (scrollAction === 'up' || scrollAction === 'down' || scrollAction === 'left' || scrollAction === 'right') {
+    sendToActiveTab({ action: 'scroll', direction: scrollAction });
     return;
   }
-  if (command === 'вверх' || command === 'наверх' || command === 'прокрути вверх') {
-    sendToActiveTab({ action: 'scroll', direction: 'up' });
-    return;
-  }
-  if (command === 'в начало' || command === 'в самый верх') {
-    sendToActiveTab({ action: 'scroll-to', position: 'top' });
-    return;
-  }
-  if (command === 'в конец' || command === 'в самый низ' || command === 'прокрути в конец' || command === 'конец') {
-    sendToActiveTab({ action: 'scroll-to', position: 'bottom' });
-    return;
-  }
-  if (command === 'влево' || command === 'прокрути влево') {
-    sendToActiveTab({ action: 'scroll', direction: 'left' });
-    return;
-  }
-  if (command === 'вправо' || command === 'прокрути вправо') {
-    sendToActiveTab({ action: 'scroll', direction: 'right' });
+  if (scrollAction === 'top' || scrollAction === 'bottom') {
+    sendToActiveTab({ action: 'scroll-to', position: scrollAction });
     return;
   }
 
-  if (command === 'увеличить' || command === 'приблизить') {
+  // Zoom
+  var zoomAction = matchCmd(command, 'zoom');
+  if (zoomAction === 'zoom-in') {
     var tab = await getTargetTab();
     if (tab) { try { var z = await chrome.tabs.getZoom(tab.id); await chrome.tabs.setZoom(tab.id, Math.min(z + 0.25, 5)); } catch(e) {} }
     return;
   }
-  if (command === 'уменьшить' || command === 'отдалить') {
+  if (zoomAction === 'zoom-out') {
     var tab = await getTargetTab();
     if (tab) { try { var z = await chrome.tabs.getZoom(tab.id); await chrome.tabs.setZoom(tab.id, Math.max(z - 0.25, 0.25)); } catch(e) {} }
     return;
   }
 
-  if (command.startsWith('найди ') || command.startsWith('поиск ') || command.startsWith('найти ')) {
-    var query = command.replace(/^(найди|поиск|найти)\s+/, '');
-    try { chrome.tabs.create({ url: 'https://www.google.com/search?q=' + encodeURIComponent(query), windowId: targetWindowId || undefined }); } catch(e) { chrome.tabs.create({ url: 'https://www.google.com/search?q=' + encodeURIComponent(query) }); }
+  // Search
+  var searchQuery = matchPrefix(command, 'search_prefix');
+  if (searchQuery) {
+    try { chrome.tabs.create({ url: 'https://www.google.com/search?q=' + encodeURIComponent(searchQuery), windowId: targetWindowId || undefined }); } catch(e) { chrome.tabs.create({ url: 'https://www.google.com/search?q=' + encodeURIComponent(searchQuery) }); }
     return;
   }
 
-  if (command === 'открой браузер' || command === 'открыть браузер' || command === 'запусти браузер' || command === 'запустить браузер') {
+  // Launch browser
+  if (matchList(command, 'launch_browser')) {
     chrome.runtime.sendMessage({ type: 'ws-send', data: { type: 'launch-browser' } }).catch(function() {});
     sendToActiveTab({ action: 'show-feedback', text: 'Запуск браузера...' });
     return;
   }
 
-  if (command.startsWith('открой ') || command.startsWith('открыть ')) {
-    var site = command.replace(/^(открой|открыть)\s+/, '');
-    var url = site;
-    if (site === 'новую вкладку' || site === 'новая вкладка') {
+  // Open site
+  var openTarget = matchPrefix(command, 'open_prefix');
+  if (openTarget) {
+    if (openTarget === 'новую вкладку' || openTarget === 'новая вкладка') {
       try { chrome.tabs.create({ windowId: targetWindowId || undefined }); } catch(e) { chrome.tabs.create({}); }
       return;
     }
+    var url = openTarget;
     if (!url.includes('.')) {
-      url = 'https://www.google.com/search?q=' + encodeURIComponent(site);
+      url = 'https://www.google.com/search?q=' + encodeURIComponent(openTarget);
     } else if (!url.startsWith('http')) {
       url = 'https://' + url;
     }
@@ -328,19 +355,22 @@ async function handleVoiceCommand(raw) {
     return;
   }
 
-  if (command === 'включи vpn' || command === 'включи впн' || command === 'включить vpn' || command === 'включить впн' || command === 'запусти vpn' || command === 'запусти впн') {
+  // VPN
+  var vpnAction = matchCmd(command, 'vpn');
+  if (vpnAction === 'vpn-on') {
     chrome.runtime.sendMessage({ type: 'ws-send', data: { type: 'vpn-on' } }).catch(function() {});
     sendToActiveTab({ action: 'show-feedback', text: 'VPN включается...' });
     return;
   }
-
-  if (command === 'выключи vpn' || command === 'выключи впн' || command === 'выключить vpn' || command === 'выключить впн' || command === 'отключи vpn' || command === 'отключи впн' || command === 'останови vpn' || command === 'останови впн') {
+  if (vpnAction === 'vpn-off') {
     chrome.runtime.sendMessage({ type: 'ws-send', data: { type: 'vpn-off' } }).catch(function() {});
     sendToActiveTab({ action: 'show-feedback', text: 'VPN выключается...' });
     return;
   }
 
-  if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
+  // Fullscreen
+  var fsAction = matchCmd(command, 'fullscreen');
+  if (fsAction === 'fullscreen') {
     var fsTab = await getTargetTab();
     if (fsTab) {
       try {
@@ -352,7 +382,9 @@ async function handleVoiceCommand(raw) {
     return;
   }
 
-  if (command === 'нажми' || command === 'клик') {
+  // Click
+  var clickAction = matchCmd(command, 'click');
+  if (clickAction === 'click') {
     sendToActiveTab({ action: 'click' });
     return;
   }

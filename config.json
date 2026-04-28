@@ -1,0 +1,107 @@
+{
+  "wake_phrase": "окей гугл",
+  "launch_phrase": "открой браузер",
+
+  "server": {
+    "port": 9876,
+    "sample_rate": 16000,
+    "block_size": 4000
+  },
+
+  "chrome": {
+    "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "profile": "Profile 1",
+    "flags": ["--silent-debugger-extension-api"]
+  },
+
+  "wireguard": {
+    "path": "C:\\Program Files\\WireGuard\\wireguard.exe",
+    "tunnel": "1MyVPN-Laptop"
+  },
+
+  "commands": {
+    "navigation": {
+      "назад": "go-back",
+      "вперёд": "go-forward",
+      "вперед": "go-forward",
+      "обновить": "reload",
+      "обновить страницу": "reload",
+      "перезагрузить": "reload",
+      "обнови": "reload",
+      "домой": "home",
+      "на главную": "home"
+    },
+    "scroll": {
+      "вниз": "down",
+      "прокрути вниз": "down",
+      "вверх": "up",
+      "наверх": "up",
+      "прокрути вверх": "up",
+      "влево": "left",
+      "прокрути влево": "left",
+      "вправо": "right",
+      "прокрути вправо": "right",
+      "в начало": "top",
+      "в самый верх": "top",
+      "в конец": "bottom",
+      "в самый низ": "bottom",
+      "прокрути в конец": "bottom",
+      "конец": "bottom"
+    },
+    "tabs": {
+      "новая вкладка": "new-tab",
+      "новая страница": "new-tab",
+      "закрыть вкладку": "close-tab",
+      "закрыть страницу": "close-tab",
+      "закрой вкладку": "close-tab",
+      "следующая вкладка": "next-tab",
+      "предыдущая вкладка": "prev-tab"
+    },
+    "zoom": {
+      "увеличить": "zoom-in",
+      "приблизить": "zoom-in",
+      "уменьшить": "zoom-out",
+      "отдалить": "zoom-out"
+    },
+    "links": {
+      "выбрать ссылку": "show-links",
+      "выбери ссылку": "show-links",
+      "ссылки": "show-links",
+      "покажи ссылки": "show-links",
+      "показать ссылки": "show-links",
+      "убрать ссылки": "hide-links",
+      "скрыть ссылки": "hide-links",
+      "убрать номера": "hide-links",
+      "скрыть номера": "hide-links"
+    },
+    "fullscreen": {
+      "на весь экран": "fullscreen",
+      "разверни на весь экран": "fullscreen",
+      "полный экран": "fullscreen",
+      "фулскрин": "fullscreen"
+    },
+    "vpn": {
+      "включи vpn": "vpn-on",
+      "включи впн": "vpn-on",
+      "включить vpn": "vpn-on",
+      "включить впн": "vpn-on",
+      "запусти vpn": "vpn-on",
+      "запусти впн": "vpn-on",
+      "выключи vpn": "vpn-off",
+      "выключи впн": "vpn-off",
+      "выключить vpn": "vpn-off",
+      "выключить впн": "vpn-off",
+      "отключи vpn": "vpn-off",
+      "отключи впн": "vpn-off",
+      "останови vpn": "vpn-off",
+      "останови впн": "vpn-off"
+    },
+    "click": {
+      "нажми": "click",
+      "клик": "click"
+    },
+    "search_prefix": ["найди", "поиск", "найти"],
+    "open_prefix": ["открой", "открыть"],
+    "launch_browser": ["открой браузер", "открыть браузер", "запусти браузер", "запустить браузер"]
+  }
+}

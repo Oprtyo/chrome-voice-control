@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Voice Control Server — локальное распознавание wake-фразы "Окей браузер".
+Voice Control Server — локальное распознавание wake-фразы.
 Слушает микрофон через Vosk (офлайн), при обнаружении wake-фразы
 отправляет сигнал в Chrome-расширение через WebSocket.
 Распознавание команд выполняется в Chrome через Google Web Speech API.
@@ -20,22 +20,35 @@ from vosk import Model, KaldiRecognizer, SetLogLevel
 
 SetLogLevel(-1)
 
-WAKE_PHRASE = "окей гугл"
-LAUNCH_PHRASE = "открой браузер"
-SAMPLE_RATE = 16000
-BLOCK_SIZE = 4000
-WS_PORT = 9876
-
-# Chrome launch config
-CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
-CHROME_PROFILE = 'Profile 1'
-
-# WireGuard config
-WIREGUARD_PATH = r'C:\Program Files\WireGuard\wireguard.exe'
-WIREGUARD_TUNNEL = '1MyVPN-Laptop'  # Имя туннеля (имя .conf файла без расширения)
-
-# Поиск модели
+# Загрузка конфигурации из config.json
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_PATH = os.path.join(SCRIPT_DIR, '..', 'config.json')
+
+def load_config():
+    try:
+        with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f'[!] Ошибка загрузки config.json: {e}')
+        print(f'[!] Путь: {os.path.abspath(CONFIG_PATH)}')
+        sys.exit(1)
+
+config = load_config()
+
+WAKE_PHRASE = config.get('wake_phrase', 'окей гугл')
+LAUNCH_PHRASE = config.get('launch_phrase', 'открой браузер')
+SAMPLE_RATE = config.get('server', {}).get('sample_rate', 16000)
+BLOCK_SIZE = config.get('server', {}).get('block_size', 4000)
+WS_PORT = config.get('server', {}).get('port', 9876)
+
+chrome_cfg = config.get('chrome', {})
+CHROME_PATH = chrome_cfg.get('path', r'C:\Program Files\Google\Chrome\Application\chrome.exe')
+CHROME_PROFILE = chrome_cfg.get('profile', 'Profile 1')
+CHROME_FLAGS = chrome_cfg.get('flags', ['--silent-debugger-extension-api'])
+
+wg_cfg = config.get('wireguard', {})
+WIREGUARD_PATH = wg_cfg.get('path', r'C:\Program Files\WireGuard\wireguard.exe')
+WIREGUARD_TUNNEL = wg_cfg.get('tunnel', 'wg0')
 MODEL_PATHS = [
     os.path.join(SCRIPT_DIR, "model"),
     os.path.join(SCRIPT_DIR, "vosk-model-small-ru-0.22"),
@@ -95,7 +108,7 @@ def launch_browser():
             else:
                 chrome_path = 'google-chrome'
 
-        args = [chrome_path, '--silent-debugger-extension-api']
+        args = [chrome_path] + CHROME_FLAGS
         if CHROME_PROFILE:
             args.append(f'--profile-directory={CHROME_PROFILE}')
 

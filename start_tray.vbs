@@ -1,5 +1,5 @@
-Set WshShell = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 scriptDir = fso.GetParentFolderName(WScript.ScriptFullName)
-WshShell.CurrentDirectory = scriptDir
-WshShell.Run "pythonw server\tray_server.py", 0, False
+
+Set shell = CreateObject("Shell.Application")
+shell.ShellExecute "pythonw.exe", """" & scriptDir & "\server\tray_server.py""", scriptDir, "runas", 0
