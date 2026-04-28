@@ -31,6 +31,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     case 'press-key':
       pressKey(message.key);
       break;
+    case 'toggle-fullscreen':
+      toggleFullscreen();
+      break;
     case 'show-feedback':
       showFeedback(message.text);
       break;
@@ -67,6 +70,32 @@ function handleScrollTo(position) {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     showFeedback('В конец страницы');
   }
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(function() {});
+    return;
+  }
+  // Try to find video player container
+  var video = document.querySelector('video');
+  if (video) {
+    // YouTube: fullscreen the player container, not just <video>
+    var container = video.closest('.html5-video-player') ||
+                    video.closest('[class*="player"]') ||
+                    video.closest('[class*="Player"]') ||
+                    video.parentElement;
+    if (container) {
+      container.requestFullscreen().catch(function() {
+        video.requestFullscreen().catch(function() {});
+      });
+    } else {
+      video.requestFullscreen().catch(function() {});
+    }
+    return;
+  }
+  // No video found — fullscreen the whole page
+  document.documentElement.requestFullscreen().catch(function() {});
 }
 
 function pressKey(key) {

@@ -299,7 +299,7 @@ async function handleVoiceCommand(raw) {
   }
 
   if (command === 'на весь экран' || command === 'разверни на весь экран' || command === 'полный экран' || command === 'фулскрин') {
-    sendToActiveTab({ action: 'press-key', key: 'f' });
+    sendToActiveTab({ action: 'toggle-fullscreen' });
     return;
   }
 
